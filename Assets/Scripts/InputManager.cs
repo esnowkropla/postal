@@ -42,30 +42,27 @@ public static class InputManager
 	{
 		if (EventSystem.current.IsPointerOverGameObject(-1)) { return; } /* We're over the UI so don't raycat */
 
-		LayerMask mask = (1 << (int)UNITY_LAYERS.Tiles);
+		LayerMask mask = (1 << (int)UNITY_LAYERS.Obj);
 		mouseRay = Camera.main.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
 		hits = Physics.RaycastAll(mouseRay, 3000, mask);
 		Array.Sort(hits, CompareDistFromCamera);
 
 		for (int i = 0; i < hits.Length; i++)
 		{
-			Tile tileScript = hits[i].transform.gameObject.GetComponent<Tile>();
-			if (tileScript != null)
-			{
-				tileScript.CreateOn(Builtins.Conveyor);
-				break;
-			}
-
+			mouseUp = true;
 			Obj obj = hits[i].transform.gameObject.GetComponent<Obj>();
-			if (obj != null)
-			{
-				obj.Rotate();
-				break;
-			}
+			if (obj == null) { continue; }
+
+			if (obj.type == Builtins.Parcel) { break; }
+			else if (obj.type == Builtins.Conveyor) { Obj.Create(obj.x, obj.y, Globals.ids++, Facing.Right, Builtins.Parcel); break; }
+			else if (obj.type == Builtins.Tile) { Obj.Create(obj.x, obj.y, Globals.ids++, Facing.Right, Builtins.Conveyor); break; }
 		}
+		if (mouseUp) { Sounds.PlayUI(Sounds.FX.ButtonDown); }
 	}
+	static bool mouseUp = false;
 
 	static void HandleMouseUp()
 	{
+		if (mouseUp) { Sounds.PlayUI(Sounds.FX.ButtonUp); mouseUp = false;}
 	}
 }

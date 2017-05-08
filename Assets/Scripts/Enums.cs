@@ -19,7 +19,7 @@ namespace Enums
 	{
 		None = 0,
 		UI = 5,
-		Tiles = 8
+		Obj = 8
 	}
 
 	public enum Facing

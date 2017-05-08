@@ -3,7 +3,6 @@ using System.Collections;
 
 public class Globals : MonoBehaviour
 {
-	public GameObject Tile;
 	public GameObject Obj;
 	public Material[] materials;
 

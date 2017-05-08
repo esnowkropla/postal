@@ -3,45 +3,60 @@ using System.Collections;
 using System.Collections.Generic;
 
 using TypeInfo;
+using Structs;
 using Enums;
 
 public class Obj : MonoBehaviour
 {
 	public static List<Prototype> prototypes = new List<Prototype>();
 
-	public static int[,] grid = new int[10, 10];
 	
-	public class Prototype
+	public struct Prototype
 	{
 		public Type type;
 		public float height;
+		public GridLayer layer;
 
 		public static void Init()
 		{
-			Prototype p = new Prototype();
-			p.type = Builtins.Tile;
-			p.height = 0;
-			prototype.Add(p);
-			
-			Prototype p = new Prototype();
-			p.type = Builtins.Conveyor;
-			p.height = 0.1;
-			prototypes.Add(p);
+			Prototype p;
+			SheetFuncs.Mat mat;
 
-			p = new Prototype();
-			p.type = Builtins.Parcel;
-			p.height = 0.2;
+			p.type = Builtins.Tile;
+			p.height = 0f;
+			p.layer = GridLayer.Base;
 			prototypes.Add(p);
+			mat.type = Builtins.Tile;
+			mat.material = Globals.go.materials[0];
+			SheetFuncs.materials.Add(mat);
+			
+			p.type = Builtins.Conveyor;
+			p.height = 0.1f;
+			p.layer = GridLayer.Conveyor;
+			prototypes.Add(p);
+			mat.type = Builtins.Conveyor;
+			mat.material = Globals.go.materials[2];
+			SheetFuncs.materials.Add(mat);
+
+			p.type = Builtins.Parcel;
+			p.height = 0.2f;
+			p.layer = GridLayer.Top;
+			prototypes.Add(p);
+			mat.type = Builtins.Parcel;
+			mat.material = Globals.go.materials[3];
+			SheetFuncs.materials.Add(mat);
 		}
 	}
 
 	public GameObject puppet;
+	public MeshRenderer meshRenderer;
 	public GameObject label;
 	public TextMesh labelMesh;
 
 	/* Prototype fields */
 	public Type type;
 	public float height;
+	public GridLayer layer;
 	/* Individual fields */
 	public Facing facing = Facing.Right;
 	public int x;
@@ -52,20 +67,30 @@ public class Obj : MonoBehaviour
 	
 	void Start () { labelMesh.text = "" + id; }
 
+	public static void Create(int x, int y, int id, Facing facing, Type type)
+	{
+		GameObject go = Instantiate(Globals.go.Obj, new Vector3(x, y, 0), Quaternion.identity) as GameObject;
+		go.GetComponent<Obj>().Init(x, y, id, facing, type);
+	}
+
 	public void Init(int xi, int yi, int Id, Facing f, Type t)
 	{
 		x = xi;
 		y = yi;
 		id = Id;
-		Facing = f;
+		facing = f;
 		type = t;
 
-		Prototype p = null;
-		for (int i = 0; i < prototype.Count; i++) { if (prototypes[i].type == type) { p = prototypes[i]; } }
-		if (p == null) { Logging.Error("Couldn't find type " + type + " in prototypes"); return; }
-		height = p.height;
+		Prototype p = default(Prototype);
+		for (int i = 0; i < prototypes.Count; i++) { if (prototypes[i].type == type) { p = prototypes[i]; } }
+		if (p.type == Builtins.Uninitialized) { Logging.Error("Couldn't find type " + type + " in prototypes"); return; }
+		height = -p.height;
+		layer = p.layer;
+
+		for (int i = 0; i < SheetFuncs.materials.Count; i++) { if (SheetFuncs.materials[i].type == type) { meshRenderer.material = SheetFuncs.materials[i].material; } }
 
 		transform.position = new Vector3(x, y, height);
+		Grid.grid[x, y, layer] = id;
 	}
 
 	public void Rotate()
