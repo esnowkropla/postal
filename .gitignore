@@ -1,0 +1,8 @@
+ProjectSettings/
+Temp/
+build/
+Library/
+.vs/
+*csproj
+*sln
+*userprefs
