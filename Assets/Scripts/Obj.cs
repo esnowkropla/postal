@@ -9,7 +9,6 @@ using Enums;
 public class Obj : MonoBehaviour
 {
 	public static List<Prototype> prototypes = new List<Prototype>();
-
 	
 	public struct Prototype
 	{
