@@ -86,15 +86,35 @@ public class Obj : MonoBehaviour
 		height = -p.height;
 		layer = p.layer;
 
+		MatchFacing();
+
 		for (int i = 0; i < SheetFuncs.materials.Count; i++) { if (SheetFuncs.materials[i].type == type) { meshRenderer.material = SheetFuncs.materials[i].material; } }
 
 		transform.position = new Vector3(x, y, height);
 		Grid.grid[x, y, layer] = id;
 	}
 
-	public void Rotate()
+	void MatchFacing()
 	{
-		puppet.transform.Rotate(new Vector3(0, 0, -90f));
-		facing = (int)facing + 1 < 4 ? (Facing)((int)facing + 1) : Facing.Right;
+		puppet.transform.localRotation = Quaternion.identity;
+		switch (facing)
+		{
+			case Facing.Left: puppet.transform.Rotate(Vector3.forward * 180f); break;
+			case Facing.Down: puppet.transform.Rotate(Vector3.forward * -90f); break;
+			case Facing.Up: puppet.transform.Rotate(Vector3.forward * 90f); break;
+			case Facing.Right: break;
+		}
+	}
+
+	public void RotateClockwise()
+	{
+		puppet.transform.Rotate(Vector3.forward * -90f);
+		facing = (Facing)(((int)facing + 1) % 4);
+	}
+
+	public void RotateCounterClockwise()
+	{
+		puppet.transform.Rotate(Vector3.forward * 90f);
+		facing = (int)facing - 1 < 0 ? Facing.Up : (Facing) ((int)facing - 1);
 	}
 }

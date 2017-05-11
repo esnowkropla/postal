@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using System;
+using System.Collections.Generic;
 
 using TypeInfo;
 using Structs;
@@ -10,12 +11,30 @@ public static class InputManager
 {
 	public static RingBuffer<InputEvent> eventBuffer = new RingBuffer<InputEvent>();
 	static Ray mouseRay;
-	static RaycastHit[] hits;
+	static RaycastHit[] hits = new RaycastHit[0];
 	public static Vector3 mouseInWorld;
 
 	static int CompareDistFromCamera(RaycastHit hit1, RaycastHit hit2)
 	{
 		return Mathf.RoundToInt(hit1.distance - hit2.distance);
+	}
+
+	static RingBuffer<InputEvent> buff = new RingBuffer<InputEvent>();
+	public static void FilterInput(List<InputResponse> responses)
+	{
+		bool called;
+		while (eventBuffer.Count > 0)
+		{
+			InputEvent e = eventBuffer.PopFront();
+			called = false;
+			for (int i = 0; i < responses.Count; i++)
+			{
+				if (e.type == responses[i].inputEvent.type) { responses[i].action(); called = true; }
+			}
+			if (!called) { buff.Add(e); }
+		}
+
+		while (buff.Count > 0) { InputEvent e = buff.PopFront(); eventBuffer.Add(e); }
 	}
 	
 	public static void Update()
@@ -33,6 +52,11 @@ public static class InputManager
 		if (Input.GetKeyDown(KeyCode.Minus)) { eventBuffer.Add(new InputEvent(INPUT_EVENT.CAMERA_ZOOM_OUT, null)); }
 		if (Input.GetKeyDown(KeyCode.Equals)) { eventBuffer.Add(new InputEvent(INPUT_EVENT.CAMERA_ZOOM_IN, null)); }
 
+		if (Input.GetKeyDown(KeyCode.Q)) { eventBuffer.Add(new InputEvent(INPUT_EVENT.ROTATE_CLOCKWISE, null)); }
+		if (Input.GetKeyDown(KeyCode.E)) { eventBuffer.Add(new InputEvent(INPUT_EVENT.ROTATE_COUNTER_CLOCKWISE, null)); }
+
+		if (Input.GetKeyDown(KeyCode.Alpha1)) { eventBuffer.Add(new InputEvent(INPUT_EVENT.TOGGLE_MENU_0, null)); }
+
 		if (Input.GetKeyUp(KeyCode.Escape)) { Application.Quit(); }
 
 		HandleMouse();
@@ -42,7 +66,7 @@ public static class InputManager
 
 	static void HandleMouse()
 	{
-		if (EventSystem.current.IsPointerOverGameObject(-1)) { return; } /* We're over the UI so don't raycat */
+		if (EventSystem.current.IsPointerOverGameObject(-1)) { if (hits.Length > 0) { hits = new RaycastHit[0]; } return; } /* We're over the UI so don't raycat */
 
 		LayerMask mask = (1 << (int)UNITY_LAYERS.Obj);
 		mouseRay = Camera.main.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
@@ -67,17 +91,23 @@ public static class InputManager
 		for (int i = 0; i < hits.Length; i++)
 		{
 			mouseUp = true;
-			Obj obj = hits[i].transform.gameObject.GetComponent<Obj>();
+			Obj obj = hits[i].transform.gameObject.GetComponentInParent<Obj>();
 			if (obj == null) { continue; }
 
-			if (obj.type == Builtins.Tile)
+			if (obj.type == Builtins.Tile && Ghost.self.obj.puppet.activeSelf)
 			{
-				Obj.Create(obj.x, obj.y, Globals.ids++, Facing.Right, Builtins.Conveyor);
+				Obj.Create(obj.x, obj.y, Globals.ids++, Ghost.self.obj.facing, Builtins.Conveyor);
+				Ghost.self.obj.puppet.SetActive(false);
+				break;
+			}
+			else
+			{
 				break;
 			}
 		}
 		if (mouseUp) { Sounds.PlayUI(Sounds.FX.ButtonDown); }
 	}
+
 	static bool mouseUp = false;
 
 	static void HandleMouseUp()

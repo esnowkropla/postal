@@ -12,7 +12,10 @@ namespace Enums
 		CAMERA_BACK_KUP,
 		CAMERA_BACK_KDOWN,
 		CAMERA_ZOOM_IN,
-		CAMERA_ZOOM_OUT
+		CAMERA_ZOOM_OUT,
+		ROTATE_CLOCKWISE,
+		ROTATE_COUNTER_CLOCKWISE,
+		TOGGLE_MENU_0
 	}
 
 	public enum UNITY_LAYERS
@@ -24,9 +27,15 @@ namespace Enums
 
 	public enum Facing
 	{
-		Right,
-		Down,
-		Left,
-		Up
+		Right = 0,
+		Down = 1,
+		Left = 2,
+		Up = 3
+	}
+
+	public enum MenuState
+	{
+		IN,
+		OUT
 	}
 }

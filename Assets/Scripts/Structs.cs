@@ -17,6 +17,18 @@ namespace Structs
 		}
 	}
 
+	public struct InputResponse
+	{
+		public InputEvent inputEvent;
+		public Action action;
+
+		public InputResponse(INPUT_EVENT e, Action a)
+		{
+			inputEvent = new InputEvent(e, null);
+			action = a;
+		}
+	}
+
 	#pragma warning disable 0660
 	public struct GridLayer
 	#pragma warning restore 0660

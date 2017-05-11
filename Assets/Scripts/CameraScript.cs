@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 using Structs;
 using Enums;
@@ -20,37 +21,51 @@ public class CameraScript : MonoBehaviour
 
 	Vector3 force;
 	Vector3 dx;
+
+	List<InputResponse> responses = new List<InputResponse>();
 	
 	void Start ()
 	{
-	
+		responses.Add(new InputResponse(INPUT_EVENT.CAMERA_LEFT_KDOWN, CameraLeft));
+		responses.Add(new InputResponse(INPUT_EVENT.CAMERA_LEFT_KUP, CameraRight));
+		responses.Add(new InputResponse(INPUT_EVENT.CAMERA_RIGHT_KDOWN, CameraRight));
+		responses.Add(new InputResponse(INPUT_EVENT.CAMERA_RIGHT_KUP, CameraLeft));
+		responses.Add(new InputResponse(INPUT_EVENT.CAMERA_FORWARD_KDOWN, CameraForward));
+		responses.Add(new InputResponse(INPUT_EVENT.CAMERA_FORWARD_KUP, CameraBack));
+		responses.Add(new InputResponse(INPUT_EVENT.CAMERA_BACK_KDOWN, CameraBack));
+		responses.Add(new InputResponse(INPUT_EVENT.CAMERA_BACK_KUP, CameraForward));
+		responses.Add(new InputResponse(INPUT_EVENT.CAMERA_ZOOM_IN, ZoomIn));
+		responses.Add(new InputResponse(INPUT_EVENT.CAMERA_ZOOM_OUT, ZoomOut));
 	}
-	
+
 	void Update ()
 	{
-		if (InputManager.eventBuffer.Count > 0)
-		{
-			InputEvent input = InputManager.eventBuffer.PopFront();
-			switch(input.type)
-			{
-				case INPUT_EVENT.CAMERA_LEFT_KDOWN: force += Vector3.left * 10; break;
-				case INPUT_EVENT.CAMERA_LEFT_KUP: force += Vector3.right * 10; break;
-				case INPUT_EVENT.CAMERA_RIGHT_KDOWN: force += Vector3.right * 10; break;
-				case INPUT_EVENT.CAMERA_RIGHT_KUP: force += Vector3.left * 10; break;
-				case INPUT_EVENT.CAMERA_FORWARD_KDOWN: force += Vector3.up * 10; break;
-				case INPUT_EVENT.CAMERA_FORWARD_KUP: force += Vector3.down * 10; break;
-				case INPUT_EVENT.CAMERA_BACK_KDOWN: force += Vector3.down * 10; break;
-				case INPUT_EVENT.CAMERA_BACK_KUP: force += Vector3.up * 10; break;
-				case INPUT_EVENT.CAMERA_ZOOM_IN: ZoomIn(); break;
-				case INPUT_EVENT.CAMERA_ZOOM_OUT: ZoomOut(); break;
-				default: InputManager.eventBuffer.Add(input); break;
-			}
-		}
+		InputManager.FilterInput(responses);
 
 		dx = force.normalized * cameraSpeed * Timer.deltaTime;
 		gameObject.transform.position += dx;
 	}
 
+	void CameraLeft()
+	{
+		force += Vector3.left * 10;
+	}
+
+	void CameraRight()
+	{
+		force += Vector3.right * 10;
+	}
+
+	void CameraForward()
+	{
+		force += Vector3.up * 10;
+	}
+
+	void CameraBack()
+	{
+		force += Vector3.down * 10;
+	}
+	
 	void ZoomIn()
 	{
 		if ((int) zoomLevel < 2)
