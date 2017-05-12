@@ -61,4 +61,10 @@ namespace Structs
 			return t;
 		}
 	}
+
+	public struct Pair<T>
+	{
+		T x;
+		T y;
+	}
 }

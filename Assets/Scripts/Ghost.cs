@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
+using TypeInfo;
 using Structs;
 using Enums;
 
@@ -31,5 +32,26 @@ public class Ghost : MonoBehaviour
 		InputManager.FilterInput(responses);
 	}
 
-	public static void Position(Vector3 pos) { self.transform.position = pos; self.transform.position += Vector3.back * 0.01f; }
+	public static void Position(Vector3 pos, Quaternion rot)
+	{
+		self.transform.position = pos;
+		self.transform.position += Vector3.back * 0.01f;
+		self.transform.rotation = rot;
+	}
+
+	public void Activate(Type type, Facing facing)
+	{
+		obj.puppet.SetActive(true);
+		obj.type = type;
+		obj.facing = facing;
+		obj.puppet.transform.localRotation = Quaternion.identity;
+
+	}
+
+	public void Deactivate()
+	{
+		obj.puppet.SetActive(false);
+		obj.type = Builtins.Uninitialized;
+		obj.facing = Facing.Right;
+	}
 }

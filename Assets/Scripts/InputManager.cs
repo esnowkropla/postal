@@ -60,13 +60,11 @@ public static class InputManager
 		if (Input.GetKeyUp(KeyCode.Escape)) { Application.Quit(); }
 
 		HandleMouse();
-		if (Input.GetMouseButtonDown(0)) { HandleMouseDown(); }
-		if (Input.GetMouseButtonUp(0)) { HandleMouseUp(); }
 	}
 
 	static void HandleMouse()
 	{
-		if (EventSystem.current.IsPointerOverGameObject(-1)) { if (hits.Length > 0) { hits = new RaycastHit[0]; } return; } /* We're over the UI so don't raycat */
+		if (EventSystem.current.IsPointerOverGameObject(-1)) { return; } /* We're over the UI so don't raycat */
 
 		LayerMask mask = (1 << (int)UNITY_LAYERS.Obj);
 		mouseRay = Camera.main.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
@@ -82,8 +80,13 @@ public static class InputManager
 			if (obj == null) { continue; }
 			LoggingText.self.text.text += "\n" + obj.type + " x: " + obj.x + " y: " + obj.y;
 
-			if (obj.type == Builtins.Tile) { Ghost.Position(obj.transform.position); break; }
+			if (obj.type == Builtins.Tile) { Ghost.Position(obj.transform.position, obj.transform.rotation); break; }
 		}
+
+		/* Handle Clicks */
+		if (Input.GetMouseButtonDown(0)) { HandleMouseDown(); }
+		if (Input.GetMouseButtonUp(0)) { HandleMouseUp(); }
+		hits = new RaycastHit[0];
 	}
 
 	static void HandleMouseDown()
@@ -96,8 +99,8 @@ public static class InputManager
 
 			if (obj.type == Builtins.Tile && Ghost.self.obj.puppet.activeSelf)
 			{
-				Obj.Create(obj.x, obj.y, Globals.ids++, Ghost.self.obj.facing, Builtins.Conveyor);
-				Ghost.self.obj.puppet.SetActive(false);
+				Obj.Create(obj.x, obj.y, Globals.ids++, Ghost.self.obj.facing, Builtins.Conveyor, obj.grid);
+				Ghost.self.Deactivate();
 				break;
 			}
 			else

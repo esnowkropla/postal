@@ -58,6 +58,7 @@ public class Obj : MonoBehaviour
 	public GridLayer layer;
 	/* Individual fields */
 	public Facing facing = Facing.Right;
+	public Grid grid;
 	public int x;
 	public int y;
 	public int id;
@@ -66,19 +67,21 @@ public class Obj : MonoBehaviour
 	
 	void Start () { labelMesh.text = "" + id; }
 
-	public static void Create(int x, int y, int id, Facing facing, Type type)
+	public static void Create(int x, int y, int id, Facing facing, Type type, Grid g)
 	{
-		GameObject go = Instantiate(Globals.go.Obj, new Vector3(x, y, 0), Quaternion.identity) as GameObject;
-		go.GetComponent<Obj>().Init(x, y, id, facing, type);
+		GameObject go = Instantiate(Globals.go.Obj, g.transform.position, g.transform.rotation) as GameObject;
+		go.transform.parent = g.transform;
+		go.GetComponent<Obj>().Init(x, y, id, facing, type, g);
 	}
 
-	public void Init(int xi, int yi, int Id, Facing f, Type t)
+	public void Init(int xi, int yi, int Id, Facing f, Type t, Grid g)
 	{
 		x = xi;
 		y = yi;
 		id = Id;
 		facing = f;
 		type = t;
+		grid = g;
 
 		Prototype p = default(Prototype);
 		for (int i = 0; i < prototypes.Count; i++) { if (prototypes[i].type == type) { p = prototypes[i]; } }
@@ -90,8 +93,8 @@ public class Obj : MonoBehaviour
 
 		for (int i = 0; i < SheetFuncs.materials.Count; i++) { if (SheetFuncs.materials[i].type == type) { meshRenderer.material = SheetFuncs.materials[i].material; } }
 
-		transform.position = new Vector3(x, y, height);
-		Grid.grid[x, y, layer] = id;
+		transform.localPosition = new Vector3(x, y, height);
+		grid.cells[x, y, layer] = id;
 	}
 
 	void MatchFacing()

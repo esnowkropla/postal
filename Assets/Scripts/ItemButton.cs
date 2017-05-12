@@ -15,9 +15,6 @@ public class ItemButton : MonoBehaviour
 
 	public void OnClick()
 	{
-		Ghost.self.obj.puppet.SetActive(true);
-		Ghost.self.obj.type = Builtins.Conveyor;
-		Ghost.self.obj.facing = Facing.Right;
-		Ghost.self.obj.puppet.transform.localRotation = Quaternion.identity;
+		Ghost.self.Activate(Builtins.Conveyor, Facing.Right);
 	}
 }
