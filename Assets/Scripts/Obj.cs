@@ -15,40 +15,17 @@ public class Obj : MonoBehaviour
 		public Type type;
 		public float height;
 		public GridLayer layer;
+		public List<Anim.Animation> animations;
 
 		public static void Init()
 		{
-			Prototype p;
-			SheetFuncs.Mat mat;
-
-			p.type = Builtins.Tile;
-			p.height = 0f;
-			p.layer = GridLayer.Base;
-			prototypes.Add(p);
-			mat.type = Builtins.Tile;
-			mat.material = Globals.go.materials[0];
-			SheetFuncs.materials.Add(mat);
-			
-			p.type = Builtins.Conveyor;
-			p.height = 0.1f;
-			p.layer = GridLayer.Conveyor;
-			prototypes.Add(p);
-			mat.type = Builtins.Conveyor;
-			mat.material = Globals.go.materials[2];
-			SheetFuncs.materials.Add(mat);
-
-			p.type = Builtins.Parcel;
-			p.height = 0.2f;
-			p.layer = GridLayer.Top;
-			prototypes.Add(p);
-			mat.type = Builtins.Parcel;
-			mat.material = Globals.go.materials[3];
-			SheetFuncs.materials.Add(mat);
+			prototypes.Add(Prototypes.Tile());
+			prototypes.Add(Prototypes.Conveyor());
+			prototypes.Add(Prototypes.Parcel());
 		}
 	}
 
 	public GameObject puppet;
-	public MeshRenderer meshRenderer;
 	public GameObject label;
 	public TextMesh labelMesh;
 
@@ -56,6 +33,7 @@ public class Obj : MonoBehaviour
 	public Type type;
 	public float height;
 	public GridLayer layer;
+	public Anim animator;
 	/* Individual fields */
 	public Facing facing = Facing.Right;
 	public Grid grid;
@@ -89,9 +67,10 @@ public class Obj : MonoBehaviour
 		height = -p.height;
 		layer = p.layer;
 
-		MatchFacing();
+		animator.animations = p.animations;
 
-		for (int i = 0; i < SheetFuncs.materials.Count; i++) { if (SheetFuncs.materials[i].type == type) { meshRenderer.material = SheetFuncs.materials[i].material; } }
+		animator.StartAnimation(animator.animations[0]);
+		MatchFacing();
 
 		transform.localPosition = new Vector3(x, y, height);
 		grid.cells[x, y, layer] = id;

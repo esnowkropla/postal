@@ -8,7 +8,9 @@ namespace TypeInfo
 		Uninitialized,
 		Tile,
 		Conveyor,
-		Parcel
+		Parcel,
+		Stand,
+		sheet
 	}
 
 	#pragma warning disable 0660
@@ -98,14 +100,14 @@ namespace TypeInfo
 			try
 			{
 				Builtins type = (Builtins) Enum.Parse(typeof(Builtins), text);
-				Logging.Log("Added already existing enum " + text + " with id " + (int) type);
+				Logging.Log("Added already existing enum \"" + text + "\" with id " + (int) type);
 				return (int) type;
 			}
 			catch (ArgumentException)
 			{
 				if (strToInt.ContainsKey(text))
 				{
-					Logging.Log("Adding already existing string " + text + " with id " + strToInt[text]);
+					Logging.Log("Adding already existing string \"" + text + "\" with id " + strToInt[text]);
 					return strToInt[text];
 				}
 				else
@@ -113,7 +115,7 @@ namespace TypeInfo
 					int id = intToStr.Count;
 					intToStr.Add(text);
 					strToInt.Add(text, id);
-					Logging.Log("Added string " + text + " with id " + id);
+					Logging.Log("Added string \"" + text + "\" with id " + id);
 					return id;
 				}
 			}

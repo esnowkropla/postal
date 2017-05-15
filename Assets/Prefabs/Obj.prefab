@@ -55,6 +55,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 4000012833774702}
   - 114: {fileID: 114000010215101990}
+  - 114: {fileID: 114000014173063542}
   m_Layer: 8
   m_Name: Obj
   m_TagString: Untagged
@@ -116,7 +117,7 @@ MeshRenderer:
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5a6a0a99901a6a641b150f0ee8f12d94, type: 2}
+  - {fileID: 0}
   m_SubsetIndices: 
   m_StaticBatchRoot: {fileID: 0}
   m_ProbeAnchor: {fileID: 0}
@@ -213,11 +214,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   puppet: {fileID: 1000013093691904}
-  meshRenderer: {fileID: 23000011931677386}
   label: {fileID: 1000010401287116}
   labelMesh: {fileID: 102000010210880836}
   height: 0
+  animator: {fileID: 114000014173063542}
   facing: 0
+  grid: {fileID: 0}
   x: 0
   y: 0
   id: 0
+--- !u!114 &114000014173063542
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000013877974552}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8bbdaf04e0016048bdc49f20b44fe22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentFrame: 0
+  time: 0
+  puppet: {fileID: 1000013093691904}
+  filter: {fileID: 33000013313176732}
+  meshRenderer: {fileID: 23000011931677386}

@@ -12,8 +12,17 @@ public class Globals : MonoBehaviour
 	public static float paused = 0;
 	public static Logging.Level debug = Logging.Level.LOG | Logging.Level.WARN | Logging.Level.ERROR;
 
+	public static string assetPath = null;
+	public static string persistentPath = null;
+
 	public void Awake()
 	{
 		go = this;
+	}
+
+	public static void Init()
+	{
+		assetPath = Application.dataPath + "/StreamingAssets/";
+		persistentPath = Application.persistentDataPath + "/";
 	}
 }
